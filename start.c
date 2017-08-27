@@ -1,59 +1,103 @@
-extern unsigned int __etext, __data_start__, __data_end__, __bss_start__, __bss_end__, __stack;
+#include <stdint.h>
 
-extern int main(void);
+/*----------------------------------------------------------------------------
+  Linker Generated Symbols
+ *----------------------------------------------------------------------------*/
+extern uintptr_t __text_end__;
+extern uintptr_t __data_top__;
+extern uintptr_t __data_end__;
+extern uintptr_t __bss_top__;
+extern uintptr_t __bss_end__;
+extern uintptr_t __stack_top__;
 
-void Default_Reset_Handler(void);
-void Default_Handler(void);
+/*----------------------------------------------------------------------------
+  Exception / Interrupt Handler Function Prototype
+ *----------------------------------------------------------------------------*/
+typedef void (*pFunc)(void);
 
-void Reset_Handler(void) __attribute((weak, alias("Default_Reset_Handler")));
-void NMI_Handler(void) __attribute((weak, alias("Default_Handler")));
-void HardFault_Handler(void) __attribute((weak, alias("Default_Handler")));
-void MemManage_Handler(void) __attribute((weak, alias("Default_Handler")));
-void BusFault_Handler(void) __attribute((weak, alias("Default_Handler")));
-void UsageFault_Handler(void) __attribute((weak, alias("Default_Handler")));
-void SVCall_Handler(void) __attribute((weak, alias("Default_Handler")));
-void DebugMon_Handler(void) __attribute((weak, alias("Default_Handler")));
-void PendSV_Handler(void) __attribute((weak, alias("Default_Handler")));
-void SysTick_Handler(void) __attribute((weak, alias("Default_Handler")));
+/*----------------------------------------------------------------------------
+  Exception / Interrupt Vector table
+ *----------------------------------------------------------------------------*/
+extern const pFunc Interrupt_Vectors[];
 
-__attribute__((section(".isr_vector"), used)) static void *vectors[] = {
-    (void *)&__stack,
-    (void *)&Reset_Handler,      /* Reset Handler */
-    (void *)&NMI_Handler,        /* NMI Handler */
-    (void *)&HardFault_Handler,  /* Hard Fault Handler */
-    (void *)&MemManage_Handler,  /* MPU Fault Handler */
-    (void *)&BusFault_Handler,   /* Bus Fault Handler */
-    (void *)&UsageFault_Handler, /* Usage Fault Handler */
-    0,                           /* Reserved */
-    0,                           /* Reserved */
-    0,                           /* Reserved */
-    0,                           /* Reserved */
-    (void *)&SVCall_Handler,     /* SVCall Handler */
-    (void *)&DebugMon_Handler,   /* Debug Monitor Handler */
-    0,                           /* Reserved */
-    (void *)&PendSV_Handler,     /* PendSV Handler */
-    (void *)&SysTick_Handler,    /* SysTick Handler */
+/*----------------------------------------------------------------------------
+  External References
+ *----------------------------------------------------------------------------*/
+extern void main(void); /* Program Entry Point */
+
+/*----------------------------------------------------------------------------
+  Internal References
+ *----------------------------------------------------------------------------*/
+void Default_Handler(void); /* Default Empty Handler */
+void Reset_Handler(void);   /* Reset Handler */
+
+/*----------------------------------------------------------------------------
+  Exception / Interrupt Handler
+ *----------------------------------------------------------------------------*/
+void NMI_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void HardFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void MemManage_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void BusFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void UsageFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void SVC_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void DebugMon_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void PendSV_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void SysTick_Handler(void) __attribute__((weak, alias("Default_Handler")));
+
+/*----------------------------------------------------------------------------
+  Exception / Interrupt Vector table
+ *----------------------------------------------------------------------------*/
+const pFunc Interrupt_Vectors[] __attribute__((section(".vectors"))) = {
+    /* Cortex-M7 Processor Exceptions Handler */
+    (pFunc)((uintptr_t)&__stack_top__), /* Initial Stack Pointer */
+    Reset_Handler,                      /* Reset Handler         */
+    NMI_Handler,                        /* NMI Handler           */
+    HardFault_Handler,                  /* Hard Fault Handler    */
+    MemManage_Handler,                  /* MPU Fault Handler     */
+    BusFault_Handler,                   /* Bus Fault Handler     */
+    UsageFault_Handler,                 /* Usage Fault Handler   */
+    0,                                  /* Reserved              */
+    0,                                  /* Reserved              */
+    0,                                  /* Reserved              */
+    0,                                  /* Reserved              */
+    SVC_Handler,                        /* SVCall Handler        */
+    DebugMon_Handler,                   /* Debug Monitor Handler */
+    0,                                  /* Reserved              */
+    PendSV_Handler,                     /* PendSV Handler        */
+    SysTick_Handler,                    /* SysTick Handler       */
 };
 
-_Noreturn void Default_Reset_Handler(void) {
-  unsigned int *src = &__etext;
-  unsigned int *dst = &__data_start__;
+/*----------------------------------------------------------------------------
+  Reset Handler called on controller reset
+ *----------------------------------------------------------------------------*/
+_Noreturn void Reset_Handler(void) {
+  uintptr_t *pSrc, *pDest;
 
-  /* ROM has data at end of text; copy it.  */
-  while (dst < &__data_end__)
-    *dst++ = *src++;
+  /* Get LMA Section */
+  pSrc = &__text_end__;
 
-  /* Zero bss.  */
-  for (dst = &__bss_start__; dst < &__bss_end__; dst++)
-    *dst = 0;
+  /* Copy LMA to VMA Section */
+  for (pDest = &__data_top__; pDest < &__data_end__;) {
+    *pDest++ = *pSrc++;
+  }
 
+  /* Clear BSS Section */
+  for (pDest = &__bss_top__; pDest < &__bss_end__;) {
+    *pDest++ = 0UL;
+  }
+
+  /* Program Entry Point */
   main();
 
-  while (1)
-    ;
+  /* Fallback */
+  while (1) {
+  }
 }
 
+/*----------------------------------------------------------------------------
+  Default Handler for Exceptions / Interrupts
+ *----------------------------------------------------------------------------*/
 _Noreturn void Default_Handler(void) {
-  while (1)
-    ;
+  while (1) {
+  };
 }
