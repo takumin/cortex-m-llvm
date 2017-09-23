@@ -8,6 +8,7 @@ SIZE=llvm-size-6.0
 COPY=arm-none-eabi-objcopy
 READ=arm-none-eabi-readelf
 DUMP=arm-none-eabi-objdump
+GDB=arm-none-eabi-gdb
 
 CFLAGS=-c
 CFLAGS+=--target=thumbv7em-unknown-none-eabi
@@ -51,6 +52,10 @@ $(PRJ).elf: $(OBJ)
 	@echo " COPY -> $(PRJ).bin"
 	@$(COPY) -O binary $(PRJ).elf $(PRJ).bin
 	@$(SIZE) $(SZFLAGS) $(PRJ).elf
+
+.PHONY: debug
+debug: $(PRJ).elf
+	@$(GDB) -x $(PWD)/.gdbinit $(PRJ).elf
 
 .PHONY: clean
 clean:
