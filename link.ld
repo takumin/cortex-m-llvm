@@ -1,3 +1,5 @@
+/* vim: set noet : */
+
 /* 20170827 ld.lld 5.0.0 segfault */
 /* MEMORY {                                        */
 /* FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 1M   */
