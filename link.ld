@@ -38,11 +38,11 @@ SECTIONS {
 		__buildid_end__ = .;
 	} > LMAROM
 
-	.ARM.extab ALIGN(4) : {
+	.ARM.extab : {
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
 	} > LMAROM
 
-	.ARM.exidx ALIGN(4) : {
+	.ARM.exidx : {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	} > LMAROM
 
@@ -86,4 +86,6 @@ SECTIONS {
 	} > DTCM
 
 	__stack_top__ = ORIGIN(SRAM1) + LENGTH(SRAM1);
+	__stack_limit__ = __stack_top__ - 0x2000;
+	ASSERT(__stack_limit__ >= __bss_end__, "Region SRAM Overflowed with Stack")
 }
