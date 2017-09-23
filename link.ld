@@ -1,9 +1,12 @@
 /* vim: set noet : */
 
 MEMORY {
+	ITCM   (rwx) : ORIGIN = 0x00000000, LENGTH = 16K
 	LMAROM (rx)  : ORIGIN = 0x00200000, LENGTH = 1024K
 	VMAROM (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
-	RAM    (rwx) : ORIGIN = 0x20000000, LENGTH = 320K
+	DTCM   (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
+	SRAM1  (rwx) : ORIGIN = 0x20010000, LENGTH = 240K
+	SRAM2  (rwx) : ORIGIN = 0x2004C000, LENGTH = 16K
 }
 
 ENTRY(Reset_Handler)
@@ -52,17 +55,35 @@ SECTIONS {
 		*(.data*)
 		. = ALIGN(4);
 		__data_end__ = .;
-	} > RAM
+	} > SRAM1
 
-	.bss (NOLOAD) :
-	{
+	. = ALIGN(4);
+	__itcm_start__ = .;
+
+	.itcm : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data)) {
+		. = ALIGN(4);
+		__itcm_top__ = .;
+		*(.itcm*)
+		. = ALIGN(4);
+		__itcm_end__ = .;
+	} > ITCM
+
+	.bss (NOLOAD) : {
 		. = ALIGN(4);
 		__bss_top__ = .;
 		*(.bss*)
 		*(COMMON)
 		. = ALIGN(4);
 		__bss_end__ = .;
-	} > RAM
+	} > SRAM1
 
-	__stack_top__ = ORIGIN(RAM) + LENGTH(RAM);
+	.dtcm (NOLOAD) : {
+		. = ALIGN(4);
+		__dtcm_top__ = .;
+		*(.dtcm*)
+		. = ALIGN(4);
+		__dtcm_end__ = .;
+	} > DTCM
+
+	__stack_top__ = ORIGIN(SRAM1) + LENGTH(SRAM1);
 }
