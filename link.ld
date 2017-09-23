@@ -12,19 +12,60 @@ MEMORY {
 ENTRY(Reset_Handler)
 
 SECTIONS {
-	.text : AT(ORIGIN(VMAROM)) {
+	. = ORIGIN(VMAROM);
+
+	. = ALIGN(4);
+	__vectors_start__ = .;
+
+	.vectors : AT(__vectors_start__) {
 		. = ALIGN(4);
 		__vector_top__ = .;
 		KEEP(*(.vectors))
 		. = ALIGN(4);
 		__vector_end__ = .;
+	} > LMAROM
 
+	. = __vectors_start__ + SIZEOF(.vectors);
+	__vectors_finish__ = .;
+
+	. = ALIGN(4);
+	__text_start__ = .;
+
+	.text : AT(__text_start__) {
 		. = ALIGN(4);
 		__text_top__ = .;
 		*(.text*)
 		. = ALIGN(4);
 		__text_end__ = .;
+	} > LMAROM
 
+	. = __text_start__ + SIZEOF(.text);
+	__text_finish__ = .;
+
+	. = ALIGN(4);
+	__extab_start__ = .;
+
+	.ARM.extab ALIGN(4) : AT(__extab_start__) {
+		*(.ARM.extab* .gnu.linkonce.armextab.*)
+	} > LMAROM
+
+	. = __extab_start__ + SIZEOF(.ARM.extab);
+	__extab_finish__ = .;
+
+	. = ALIGN(4);
+	__exidx_start__ = .;
+
+	.ARM.exidx ALIGN(4) : AT(__exidx_start__) {
+		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+	} > LMAROM
+
+	. = __exidx_start__ + SIZEOF(.ARM.exidx);
+	__exidx_finish__ = .;
+
+	. = ALIGN(4);
+	__rodata_start__ = .;
+
+	.rodata : AT(__rodata_start__) {
 		. = ALIGN(4);
 		__rodata_top__ = .;
 		*(.rodata*)
@@ -38,18 +79,13 @@ SECTIONS {
 		__buildid_end__ = .;
 	} > LMAROM
 
-	.ARM.extab ALIGN(4) : {
-		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} > LMAROM
-
-	.ARM.exidx ALIGN(4) : {
-		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} > LMAROM
+	. = __rodata_start__ + SIZEOF(.rodata);
+	__rodata_finish__ = .;
 
 	. = ALIGN(4);
 	__data_start__ = .;
 
-	.data : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx)) {
+	.data : AT(__data_start__) {
 		. = ALIGN(4);
 		__data_top__ = .;
 		*(.data*)
@@ -57,10 +93,13 @@ SECTIONS {
 		__data_end__ = .;
 	} > SRAM1
 
+	. = __data_start__ + SIZEOF(.data);
+	__data_finish__ = .;
+
 	. = ALIGN(4);
 	__itcm_start__ = .;
 
-	.itcm : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data)) {
+	.itcm : AT(__itcm_start__) {
 		. = ALIGN(4);
 		__itcm_top__ = .;
 		*(.itcm*)
@@ -68,10 +107,13 @@ SECTIONS {
 		__itcm_end__ = .;
 	} > ITCM
 
+	. = __itcm_start__ + SIZEOF(.itcm);
+	__itcm_finish__ = .;
+
 	. = ALIGN(4);
 	__bss_start__ = .;
 
-	.bss (NOLOAD) : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data) + SIZEOF(.itcm)) {
+	.bss (NOLOAD) : AT(__bss_start__) {
 		. = ALIGN(4);
 		__bss_top__ = .;
 		*(.bss*)
@@ -80,16 +122,22 @@ SECTIONS {
 		__bss_end__ = .;
 	} > SRAM1
 
+	. = __bss_start__ + SIZEOF(.bss);
+	__bss_finish__ = .;
+
 	. = ALIGN(4);
 	__dtcm_start__ = .;
 
-	.dtcm (NOLOAD) : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data) + SIZEOF(.itcm) + SIZEOF(.bss)) {
+	.dtcm (NOLOAD) : AT(__dtcm_start__) {
 		. = ALIGN(4);
 		__dtcm_top__ = .;
 		*(.dtcm*)
 		. = ALIGN(4);
 		__dtcm_end__ = .;
 	} > DTCM
+
+	. = __dtcm_start__ + SIZEOF(.dtcm);
+	__dtcm_finish__ = .;
 
 	__stack_top__ = ORIGIN(SRAM1) + LENGTH(SRAM1);
 	__stack_limit__ = __stack_top__ - 0x2000;
