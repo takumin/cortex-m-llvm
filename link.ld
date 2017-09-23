@@ -11,6 +11,10 @@ MEMORY {
 
 ENTRY(Reset_Handler)
 
+__stack_top__ = ORIGIN(SRAM1) + LENGTH(SRAM1);
+__stack_limit__ = __stack_top__ - 0x2000;
+ASSERT(__stack_limit__ >= __bss_end__, "Region SRAM Overflowed with Stack")
+
 SECTIONS {
 	. = ORIGIN(VMAROM);
 
@@ -138,10 +142,6 @@ SECTIONS {
 
 	. = __dtcm_start__ + SIZEOF(.dtcm);
 	__dtcm_finish__ = .;
-
-	__stack_top__ = ORIGIN(SRAM1) + LENGTH(SRAM1);
-	__stack_limit__ = __stack_top__ - 0x2000;
-	ASSERT(__stack_limit__ >= __bss_end__, "Region SRAM Overflowed with Stack")
 
 	/* Stabs debugging sections. */
 	.stab          0 : { *(.stab) }
