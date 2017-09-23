@@ -6,15 +6,15 @@
 /* RAM  (rwx) : ORIGIN = 0x20000000, LENGTH = 320K */
 /* }                                               */
 
-FLASH_ORIGIN = 0x08000000;
-FLASH_LENGTH = 1M;
+ROM_ORIGIN = 0x08000000;
+ROM_LENGTH = 1M;
 RAM_ORIGIN = 0x20000000;
 RAM_LENGTH = 320K;
 
 ENTRY(Reset_Handler)
 
 SECTIONS {
-	. = FLASH_ORIGIN;
+	. = ROM_ORIGIN;
 
 	.text : {
 		KEEP(*(.vectors))
