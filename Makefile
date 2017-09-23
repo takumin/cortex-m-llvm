@@ -2,9 +2,9 @@ PRJ=llvm-cortex-m7
 SRC=main.c start.c
 LDSCRIPT=link.ld
 
-CC=clang
-LD=ld.lld
-SIZE=llvm-size
+CC=clang-6.0
+LD=ld.lld-6.0
+SIZE=llvm-size-6.0
 COPY=arm-none-eabi-objcopy
 READ=arm-none-eabi-readelf
 DUMP=arm-none-eabi-objdump
@@ -29,6 +29,9 @@ LDFLAGS+=--gc-sections
 LDFLAGS+=--Map $(PRJ).map
 LDFLAGS+=--script $(LDSCRIPT)
 
+SZFLAGS=-A
+SZFLAGS+=-x
+
 OBJ=$(SRC:.c=.o)
 
 all: $(PRJ).elf
@@ -46,7 +49,7 @@ $(PRJ).elf: $(OBJ)
 	@$(DUMP) -axdDSstr $(PRJ).elf > $(PRJ).lst
 	@echo " COPY -> $(PRJ).bin"
 	@$(COPY) -O binary $(PRJ).elf $(PRJ).bin
-	@$(SIZE) $(PRJ).elf
+	@$(SIZE) $(SZFLAGS) $(PRJ).elf
 
 .PHONY: all clean list
 
