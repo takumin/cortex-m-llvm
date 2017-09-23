@@ -6,5 +6,6 @@ load
 monitor reset init
 
 thbreak Reset_Handler
+thbreak main
 
 continue
