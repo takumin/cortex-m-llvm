@@ -1,11 +1,14 @@
-extern int i;
-void main(void);
+extern const int i;
+extern int j;
+extern int m;
+extern void main(void);
 
-int i = 10;
+const int i = 10;
+int j = 10;
+int m;
 void main(void) {
-  // 20170827 ld.lld 5.0.0 segfault
-  // int i = 10;
-
-  for (int k = 0; k < i; k++)
-    k = i;
+  for (int k = 0; k < i; k++) {
+    j = i + k;
+    m = j;
+  }
 }
