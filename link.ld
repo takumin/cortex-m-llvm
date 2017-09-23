@@ -1,28 +1,20 @@
 /* vim: set noet : */
 
-/* 20170827 ld.lld 5.0.0 segfault */
-/* MEMORY {                                        */
-/* FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 1M   */
-/* RAM  (rwx) : ORIGIN = 0x20000000, LENGTH = 320K */
-/* }                                               */
-
-ROM_ORIGIN = 0x08000000;
-ROM_LENGTH = 1024K;
-RAM_ORIGIN = 0x20000000;
-RAM_LENGTH = 320K;
+MEMORY {
+	ROM (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+	RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 320K
+}
 
 ENTRY(Reset_Handler)
 
 SECTIONS {
-	. = ROM_ORIGIN;
-
 	.vector : {
 		. = ALIGN(4);
 		__vector_top__ = .;
 		KEEP(*(.vectors))
 		. = ALIGN(4);
 		__vector_end__ = .;
-	}
+	} > ROM
 
 	.text : {
 		. = ALIGN(4);
@@ -42,26 +34,26 @@ SECTIONS {
 		*(.note.gnu.build-id)
 		. = ALIGN(4);
 		__buildid_end__ = .;
-	}
+	} > ROM
 
-	.ARM.extab : {
+	.ARM.extab ALIGN(4) : {
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	}
+	} > ROM
 
-	.ARM.exidx : {
+	.ARM.exidx ALIGN(4) : {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	}
+	} > ROM
 
+	. = ALIGN(4);
 	__data_start__ = .;
-	. = RAM_ORIGIN;
 
-	.data : {
+	.data : AT(ADDR(.text) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx)) {
 		. = ALIGN(4);
 		__data_top__ = .;
 		*(.data*)
 		. = ALIGN(4);
 		__data_end__ = .;
-	}
+	} > RAM
 
 	.bss (NOLOAD) :
 	{
@@ -71,7 +63,7 @@ SECTIONS {
 		*(COMMON)
 		. = ALIGN(4);
 		__bss_end__ = .;
-	}
+	} > RAM
 
-	__stack_top__ = RAM_ORIGIN + RAM_LENGTH;
+	__stack_top__ = ORIGIN(RAM) + LENGTH(RAM);
 }
