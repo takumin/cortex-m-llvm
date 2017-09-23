@@ -34,6 +34,7 @@ SZFLAGS+=-x
 
 OBJ=$(SRC:.c=.o)
 
+.PHONY: all
 all: $(PRJ).elf
 
 %.o: %.c
@@ -51,8 +52,7 @@ $(PRJ).elf: $(OBJ)
 	@$(COPY) -O binary $(PRJ).elf $(PRJ).bin
 	@$(SIZE) $(SZFLAGS) $(PRJ).elf
 
-.PHONY: all clean list
-
+.PHONY: clean
 clean:
 	@echo " CLEAN"
 	@rm -fR $(OBJ) $(PRJ).elf $(PRJ).map $(PRJ).rd $(PRJ).lst $(PRJ).bin
