@@ -84,7 +84,7 @@ SECTIONS {
 	. = ALIGN(4);
 	__extab_start__ = .;
 
-	.ARM.extab ALIGN(4) : AT(__extab_start__) {
+	.ARM.extab : AT(__extab_start__) {
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
 	} > LMAROM
 
@@ -100,7 +100,7 @@ SECTIONS {
 	. = ALIGN(4);
 	__exidx_start__ = .;
 
-	.ARM.exidx ALIGN(4) : AT(__exidx_start__) {
+	.ARM.exidx : AT(__exidx_start__) {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	} > LMAROM
 
