@@ -29,13 +29,13 @@ extern const pFunc Interrupt_Vectors[];
 /*----------------------------------------------------------------------------
   External References
  *----------------------------------------------------------------------------*/
-extern void main(void); /* Program Entry Point */
+extern _Noreturn void main(void); /* Program Entry Point */
 
 /*----------------------------------------------------------------------------
   Internal References
  *----------------------------------------------------------------------------*/
-void Default_Handler(void); /* Default Empty Handler */
-void Reset_Handler(void);   /* Reset Handler */
+_Noreturn void Default_Handler(void); /* Default Empty Handler */
+_Noreturn void Reset_Handler(void);   /* Reset Handler */
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Handler
@@ -107,10 +107,6 @@ _Noreturn void Reset_Handler(void) {
 
   /* Program Entry Point */
   main();
-
-  /* Fallback */
-  while (1) {
-  }
 }
 
 /*----------------------------------------------------------------------------
