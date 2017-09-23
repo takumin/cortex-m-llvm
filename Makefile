@@ -2,7 +2,9 @@ PRJ=llvm-cortex-m7
 SRC=main.c start.c
 LDSCRIPT=link.ld
 
+# CC=arm-none-eabi-gcc
 CC=clang-6.0
+# LD=arm-none-eabi-ld
 LD=ld.lld-6.0
 SIZE=llvm-size-6.0
 COPY=arm-none-eabi-objcopy
@@ -20,7 +22,8 @@ CFLAGS+=-mfpu=fpv5-sp-d16
 CFLAGS+=-ffreestanding
 CFLAGS+=-Og
 CFLAGS+=-g3
-CFLAGS+=-ggdb
+CFLAGS+=-ggdb3
+CFLAGS+=-gdwarf-4
 CFLAGS+=-std=c11
 CFLAGS+=-Weverything
 
