@@ -7,7 +7,7 @@
 /* }                                               */
 
 ROM_ORIGIN = 0x08000000;
-ROM_LENGTH = 1M;
+ROM_LENGTH = 1024K;
 RAM_ORIGIN = 0x20000000;
 RAM_LENGTH = 320K;
 
@@ -16,10 +16,32 @@ ENTRY(Reset_Handler)
 SECTIONS {
 	. = ROM_ORIGIN;
 
-	.text : {
+	.vector : {
+		. = ALIGN(4);
+		__vector_top__ = .;
 		KEEP(*(.vectors))
+		. = ALIGN(4);
+		__vector_end__ = .;
+	}
+
+	.text : {
+		. = ALIGN(4);
+		__text_top__ = .;
 		*(.text*)
+		. = ALIGN(4);
+		__text_end__ = .;
+
+		. = ALIGN(4);
+		__rodata_top__ = .;
 		*(.rodata*)
+		. = ALIGN(4);
+		__rodata_end__ = .;
+
+		. = ALIGN(4);
+		__buildid_top__ = .;
+		*(.note.gnu.build-id)
+		. = ALIGN(4);
+		__buildid_end__ = .;
 	}
 
 	.ARM.extab : {
@@ -30,11 +52,10 @@ SECTIONS {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	}
 
-	__text_end__ = .;
-
+	__data_start__ = .;
 	. = RAM_ORIGIN;
 
-	.data : AT (__text_end__) {
+	.data : {
 		. = ALIGN(4);
 		__data_top__ = .;
 		*(.data*)
@@ -42,7 +63,7 @@ SECTIONS {
 		__data_end__ = .;
 	}
 
-	.bss :
+	.bss (NOLOAD) :
 	{
 		. = ALIGN(4);
 		__bss_top__ = .;

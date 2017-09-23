@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------------------
   Linker Generated Symbols
  *----------------------------------------------------------------------------*/
-extern uintptr_t __text_end__;
+extern uintptr_t __data_start__;
 extern uintptr_t __data_top__;
 extern uintptr_t __data_end__;
 extern uintptr_t __bss_top__;
@@ -74,7 +74,7 @@ _Noreturn void Reset_Handler(void) {
   uintptr_t *pSrc, *pDest;
 
   /* Get LMA Section */
-  pSrc = &__text_end__;
+  pSrc = &__data_start__;
 
   /* Copy LMA to VMA Section */
   for (pDest = &__data_top__; pDest < &__data_end__;) {
