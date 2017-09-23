@@ -38,11 +38,11 @@ SECTIONS {
 		__buildid_end__ = .;
 	} > LMAROM
 
-	.ARM.extab : {
+	.ARM.extab ALIGN(4) : {
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
 	} > LMAROM
 
-	.ARM.exidx : {
+	.ARM.exidx ALIGN(4) : {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	} > LMAROM
 
@@ -68,7 +68,10 @@ SECTIONS {
 		__itcm_end__ = .;
 	} > ITCM
 
-	.bss (NOLOAD) : {
+	. = ALIGN(4);
+	__bss_start__ = .;
+
+	.bss (NOLOAD) : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data) + SIZEOF(.itcm)) {
 		. = ALIGN(4);
 		__bss_top__ = .;
 		*(.bss*)
@@ -77,7 +80,10 @@ SECTIONS {
 		__bss_end__ = .;
 	} > SRAM1
 
-	.dtcm (NOLOAD) : {
+	. = ALIGN(4);
+	__dtcm_start__ = .;
+
+	.dtcm (NOLOAD) : AT(ORIGIN(VMAROM) + SIZEOF(.text) + SIZEOF(.ARM.extab) + SIZEOF(.ARM.exidx) + SIZEOF(.data) + SIZEOF(.itcm) + SIZEOF(.bss)) {
 		. = ALIGN(4);
 		__dtcm_top__ = .;
 		*(.dtcm*)
