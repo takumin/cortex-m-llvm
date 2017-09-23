@@ -79,23 +79,23 @@ const pFunc Interrupt_Vectors[] __attribute__((section(".vectors"))) = {
 _Noreturn void Reset_Handler(void) {
   uintptr_t *pSrc, *pDest;
 
-  /* Get LMA Section */
+  /* Get ITCM LMA Section */
   pSrc = &__itcm_start__;
 
-  /* Copy LMA to VMA Section */
+  /* Copy ITCM LMA to VMA Section */
   for (pDest = &__itcm_top__; pDest < &__itcm_end__;) {
     *pDest++ = *pSrc++;
   }
 
-  /* Get LMA Section */
+  /* Get DATA LMA Section */
   pSrc = &__data_start__;
 
-  /* Copy LMA to VMA Section */
+  /* Copy DATA LMA to VMA Section */
   for (pDest = &__data_top__; pDest < &__data_end__;) {
     *pDest++ = *pSrc++;
   }
 
-  /* Clear BSS Section */
+  /* Clear DTCM Section */
   for (pDest = &__dtcm_top__; pDest < &__dtcm_end__;) {
     *pDest++ = 0UL;
   }
