@@ -3,6 +3,12 @@
 /*----------------------------------------------------------------------------
   Linker Generated Symbols
  *----------------------------------------------------------------------------*/
+extern uintptr_t __itcm_start__;
+extern uintptr_t __itcm_top__;
+extern uintptr_t __itcm_end__;
+extern uintptr_t __dtcm_start__;
+extern uintptr_t __dtcm_top__;
+extern uintptr_t __dtcm_end__;
 extern uintptr_t __data_start__;
 extern uintptr_t __data_top__;
 extern uintptr_t __data_end__;
@@ -74,11 +80,24 @@ _Noreturn void Reset_Handler(void) {
   uintptr_t *pSrc, *pDest;
 
   /* Get LMA Section */
+  pSrc = &__itcm_start__;
+
+  /* Copy LMA to VMA Section */
+  for (pDest = &__itcm_top__; pDest < &__itcm_end__;) {
+    *pDest++ = *pSrc++;
+  }
+
+  /* Get LMA Section */
   pSrc = &__data_start__;
 
   /* Copy LMA to VMA Section */
   for (pDest = &__data_top__; pDest < &__data_end__;) {
     *pDest++ = *pSrc++;
+  }
+
+  /* Clear BSS Section */
+  for (pDest = &__dtcm_top__; pDest < &__dtcm_end__;) {
+    *pDest++ = 0UL;
   }
 
   /* Clear BSS Section */

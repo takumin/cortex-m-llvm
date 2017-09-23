@@ -18,6 +18,9 @@ ASSERT(__stack_limit__ >= __bss_end__, "Region SRAM Overflowed with Stack")
 SECTIONS {
 	. = ORIGIN(VMAROM);
 
+	/*--------------------------------------------------------------------------*/
+	/* .vectors start                                                           */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__vectors_start__ = .;
 
@@ -31,7 +34,33 @@ SECTIONS {
 
 	. = __vectors_start__ + SIZEOF(.vectors);
 	__vectors_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .vectors finish                                                          */
+	/*--------------------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------------------*/
+	/* .itcm start                                                              */
+	/*--------------------------------------------------------------------------*/
+	. = ALIGN(4);
+	__itcm_start__ = .;
+
+	.itcm : AT(__itcm_start__) {
+		. = ALIGN(4);
+		__itcm_top__ = .;
+		*(.itcm*)
+		. = ALIGN(4);
+		__itcm_end__ = .;
+	} > ITCM
+
+	. = __itcm_start__ + SIZEOF(.itcm);
+	__itcm_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .itcm finish                                                             */
+	/*--------------------------------------------------------------------------*/
+
+	/*--------------------------------------------------------------------------*/
+	/* .text start                                                              */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__text_start__ = .;
 
@@ -45,7 +74,13 @@ SECTIONS {
 
 	. = __text_start__ + SIZEOF(.text);
 	__text_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .text finish                                                             */
+	/*--------------------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------------------*/
+	/* .ARM.extab start                                                         */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__extab_start__ = .;
 
@@ -55,7 +90,13 @@ SECTIONS {
 
 	. = __extab_start__ + SIZEOF(.ARM.extab);
 	__extab_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .ARM.extab finish                                                        */
+	/*--------------------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------------------*/
+	/* .ARM.exidx start                                                         */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__exidx_start__ = .;
 
@@ -65,7 +106,33 @@ SECTIONS {
 
 	. = __exidx_start__ + SIZEOF(.ARM.exidx);
 	__exidx_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .ARM.exidx finish                                                        */
+	/*--------------------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------------------*/
+	/* .dtcm start                                                              */
+	/*--------------------------------------------------------------------------*/
+	. = ALIGN(4);
+	__dtcm_start__ = .;
+
+	.dtcm : AT(__dtcm_start__) {
+		. = ALIGN(4);
+		__dtcm_top__ = .;
+		*(.dtcm*)
+		. = ALIGN(4);
+		__dtcm_end__ = .;
+	} > DTCM
+
+	. = __dtcm_start__ + SIZEOF(.dtcm);
+	__dtcm_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .dtcm finish                                                             */
+	/*--------------------------------------------------------------------------*/
+
+	/*--------------------------------------------------------------------------*/
+	/* .rodata start                                                            */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__rodata_start__ = .;
 
@@ -85,7 +152,13 @@ SECTIONS {
 
 	. = __rodata_start__ + SIZEOF(.rodata);
 	__rodata_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .rodata finish                                                           */
+	/*--------------------------------------------------------------------------*/
 
+	/*--------------------------------------------------------------------------*/
+	/* .data start                                                              */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__data_start__ = .;
 
@@ -99,21 +172,13 @@ SECTIONS {
 
 	. = __data_start__ + SIZEOF(.data);
 	__data_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .data finish                                                             */
+	/*--------------------------------------------------------------------------*/
 
-	. = ALIGN(4);
-	__itcm_start__ = .;
-
-	.itcm : AT(__itcm_start__) {
-		. = ALIGN(4);
-		__itcm_top__ = .;
-		*(.itcm*)
-		. = ALIGN(4);
-		__itcm_end__ = .;
-	} > ITCM
-
-	. = __itcm_start__ + SIZEOF(.itcm);
-	__itcm_finish__ = .;
-
+	/*--------------------------------------------------------------------------*/
+	/* .bss start                                                               */
+	/*--------------------------------------------------------------------------*/
 	. = ALIGN(4);
 	__bss_start__ = .;
 
@@ -128,61 +193,53 @@ SECTIONS {
 
 	. = __bss_start__ + SIZEOF(.bss);
 	__bss_finish__ = .;
+	/*--------------------------------------------------------------------------*/
+	/* .bss finish                                                              */
+	/*--------------------------------------------------------------------------*/
 
-	. = ALIGN(4);
-	__dtcm_start__ = .;
-
-	.dtcm (NOLOAD) : AT(__dtcm_start__) {
-		. = ALIGN(4);
-		__dtcm_top__ = .;
-		*(.dtcm*)
-		. = ALIGN(4);
-		__dtcm_end__ = .;
-	} > DTCM
-
-	. = __dtcm_start__ + SIZEOF(.dtcm);
-	__dtcm_finish__ = .;
-
+	/*--------------------------------------------------------------------------*/
+	/* ignore                                                                   */
+	/*--------------------------------------------------------------------------*/
 	/* Stabs debugging sections. */
-	.stab          0 : { *(.stab) }
-	.stabstr       0 : { *(.stabstr) }
-	.stab.excl     0 : { *(.stab.excl) }
-	.stab.exclstr  0 : { *(.stab.exclstr) }
-	.stab.index    0 : { *(.stab.index) }
-	.stab.indexstr 0 : { *(.stab.indexstr) }
-	.comment       0 : { *(.comment) }
+	.stab               0: { *(.stab) }
+	.stabstr            0: { *(.stabstr) }
+	.stab.excl          0: { *(.stab.excl) }
+	.stab.exclstr       0: { *(.stab.exclstr) }
+	.stab.index         0: { *(.stab.index) }
+	.stab.indexstr      0: { *(.stab.indexstr) }
+	.comment            0: { *(.comment) }
 	/* DWARF debug sections. */
 	/* DWARF 1 */
-	.debug          0 : { *(.debug) }
-	.line           0 : { *(.line) }
+	.debug              0: { *(.debug) }
+	.line               0: { *(.line) }
 	/* GNU DWARF 1 extensions */
-	.debug_srcinfo  0 : { *(.debug_srcinfo) }
-	.debug_sfnames  0 : { *(.debug_sfnames) }
+	.debug_srcinfo      0: { *(.debug_srcinfo) }
+	.debug_sfnames      0: { *(.debug_sfnames) }
 	/* DWARF 1.1 and DWARF 2 */
-	.debug_aranges  0 : { *(.debug_aranges) }
-	.debug_pubnames 0 : { *(.debug_pubnames) }
+	.debug_aranges      0: { *(.debug_aranges) }
+	.debug_pubnames     0: { *(.debug_pubnames) }
 	/* DWARF 2 */
-	.debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
-	.debug_abbrev   0 : { *(.debug_abbrev) }
-	.debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end ) }
-	.debug_frame    0 : { *(.debug_frame) }
-	.debug_str      0 : { *(.debug_str) }
-	.debug_loc      0 : { *(.debug_loc) }
-	.debug_macinfo  0 : { *(.debug_macinfo) }
+	.debug_info         0: { *(.debug_info .gnu.linkonce.wi.*) }
+	.debug_abbrev       0: { *(.debug_abbrev) }
+	.debug_line         0: { *(.debug_line .debug_line.* .debug_line_end ) }
+	.debug_frame        0: { *(.debug_frame) }
+	.debug_str          0: { *(.debug_str) }
+	.debug_loc          0: { *(.debug_loc) }
+	.debug_macinfo      0: { *(.debug_macinfo) }
 	/* SGI/MIPS DWARF 2 extensions */
-	.debug_weaknames 0 : { *(.debug_weaknames) }
-	.debug_funcnames 0 : { *(.debug_funcnames) }
-	.debug_typenames 0 : { *(.debug_typenames) }
-	.debug_varnames  0 : { *(.debug_varnames) }
+	.debug_weaknames    0: { *(.debug_weaknames) }
+	.debug_funcnames    0: { *(.debug_funcnames) }
+	.debug_typenames    0: { *(.debug_typenames) }
+	.debug_varnames     0: { *(.debug_varnames) }
 	/* DWARF 3 */
-	.debug_pubtypes 0 : { *(.debug_pubtypes) }
-	.debug_ranges   0 : { *(.debug_ranges) }
+	.debug_pubtypes     0: { *(.debug_pubtypes) }
+	.debug_ranges       0: { *(.debug_ranges) }
 	/* DWARF Extension. */
-	.debug_macro    0 : { *(.debug_macro) }
-	.debug_addr     0 : { *(.debug_addr) }
+	.debug_macro        0: { *(.debug_macro) }
+	.debug_addr         0: { *(.debug_addr) }
 
-	.ARM.attributes 0 : { KEEP (*(.ARM.attributes)) KEEP (*(.gnu.attributes)) }
-	.note.gnu.arm.ident 0 : { KEEP (*(.note.gnu.arm.ident)) }
+	.ARM.attributes     0: { KEEP (*(.ARM.attributes)) KEEP (*(.gnu.attributes)) }
+	.note.gnu.arm.ident 0: { KEEP (*(.note.gnu.arm.ident)) }
 
 	/DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }
 }
