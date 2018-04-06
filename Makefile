@@ -2,14 +2,12 @@ PRJ=llvm-cortex-m7
 SRC=main.c start.c
 LDSCRIPT=link.ld
 
-# CC=arm-none-eabi-gcc
-CC=clang-6.0
-# LD=arm-none-eabi-ld
-LD=ld.lld-6.0
-SIZE=llvm-size-6.0
-COPY=arm-none-eabi-objcopy
-READ=arm-none-eabi-readelf
-DUMP=arm-none-eabi-objdump
+CC=clang-7
+LD=ld.lld-7
+SIZE=llvm-size-7
+COPY=llvm-objcopy-7
+READ=llvm-readelf-7
+DUMP=llvm-objdump-7
 GDB=arm-none-eabi-gdb
 
 CFLAGS=-c
@@ -21,9 +19,12 @@ CFLAGS+=-mfloat-abi=hard
 CFLAGS+=-mfpu=fpv5-sp-d16
 CFLAGS+=-ffreestanding
 CFLAGS+=-Og
-CFLAGS+=-g3
-CFLAGS+=-ggdb3
-CFLAGS+=-gdwarf-4
+CFLAGS+=-g
+CFLAGS+=-gdwarf-5
+CFLAGS+=-gembed-source
+CFLAGS+=-gmodules
+CFLAGS+=-gz
+CFLAGS+=-pg
 CFLAGS+=-std=c11
 CFLAGS+=-Weverything
 
@@ -49,9 +50,9 @@ $(PRJ).elf: $(OBJ)
 	@echo " LD $@"
 	@$(LD) -o $@ $(LDFLAGS) $^
 	@echo " READ -> $(PRJ).rd"
-	@$(READ) -Wall $(PRJ).elf > $(PRJ).rd
+	@$(READ) -sections -symbols $(PRJ).elf > $(PRJ).rd
 	@echo " LIST -> $(PRJ).lst"
-	@$(DUMP) -axdDSstr $(PRJ).elf > $(PRJ).lst
+	@$(DUMP) -t $(PRJ).elf > $(PRJ).lst
 	@echo " COPY -> $(PRJ).bin"
 	@$(COPY) -O binary $(PRJ).elf $(PRJ).bin
 	@$(SIZE) $(SZFLAGS) $(PRJ).elf
